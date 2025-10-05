@@ -1,37 +1,158 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { Facebook, Github, Instagram, Linkedin, Menu } from "lucide-react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, A11y, Scrollbar } from 'swiper/modules';
+import emailjs from "emailjs-com";
+import 'swiper/css'
 
 export default function Portofolio() {
     const [activeNavbar, setActiveNavbar] = useState(false);
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [message, setMessage] = useState('');
+
+    const navbarRef = useRef();
+
+    const [listPorjects, setListProjects] = useState([
+        {
+            name: "Kreasiku",
+            description: "Kreasiku adalah platform interaktif untuk berbagi ide dan proyek kreatif. Mengedepankan komunikasi dan kolaborasi, platform ini menyediakan fitur:",
+            fitur_active: false,
+            list_fitur: [
+                { name: "Chat Realtime", description: "Diskusi instan antar pengguna." },
+                { name: "Notifikasi Realtime", description: "Pemberitahuan otomatis untuk aktivitas terbaru." },
+                { name: "Manajemen Proyek & Konten", description: "Membuat, mengedit, dan menghapus proyek dengan mudah." },
+                { name: "Komentar & Feedback", description: "Memberikan masukan atau dukungan antar pengguna." }
+            ],
+            teknologi: "Vue.js, Node.js + Express, sequelize(mysql), Socket.io, , JWT & OAuth.",
+            image: "images/demo/belanjaqu1.jpeg",
+            link_repo: "https://github.com/AndyWidianto/kreasiku"
+        },
+        {
+            name: "Kesehatanku",
+            description: "Kesehatanku adalah aplikasi kesehatan yang membantu pengguna mendeteksi penyakit secara cepat. Fitur utamanya:",
+            fitur_active: false,
+            list_fitur: [
+                { name: "Deteksi Penyakit Kulit", description: "Analisis foto kulit untuk kemungkinan diagnosis." },
+                { name: "Deteksi Melalui Pertanyaan", description: "Menilai kemungkinan penyakit berdasarkan gejala yang dijawab pengguna." },
+                { name: "Rekomendasi & Riwayat", description: "Memberikan saran kesehatan dan menyimpan riwayat deteksi." },
+            ],
+            teknologi: "React.js, Hapi.js, sequelize(mysql), JWT",
+            image: "/images/demo/kesehatanku1.png",
+            link_repo: "https://github.com/CapstoneProjectDBS/CapstoneProjectDBS"
+        },
+        {
+            name: "BeliAja",
+            description: "BeliAja adalah aplikasi e-commerce sederhana yang memudahkan pengguna untuk membeli produk secara online. Fitur terbaru:",
+            fitur_active: false,
+            list_fitur: [
+                { name: "Login & Register", description: "Sistem autentikasi pengguna yang aman untuk membuat akun baru dan masuk ke aplikasi." },
+                { name: "Manajemen Pengguna Dasar", description: "Menyimpan data akun dan memastikan keamanan melalui token autentikasi." },
+            ],
+            teknologi: "Flutter (frontend), Node.js + Express (backend), JWT untuk autentikasi, Mysql untuk database.",
+            image: "images/demo/beliAja.jpg",
+            link_repo: "https://github.com/AndyWidianto/BeliAja"
+        }
+    ]);
+    const listSertifikat = [
+        {
+            judul: "Belajar Fundamental Front-End Web Development",
+            penerbit: "Dicoding",
+            tanggal: "19 April 2025",
+            image: "/images/sertifikat/Belajar Fundamental Front-End Web Development.png"
+        },
+        {
+            judul: "Memulai Dasar Pemrograman untuk Menjadi Pengembang Software",
+            penerbit: "Dicoding",
+            tanggal: "13 Februari 2025",
+            image: "/images/sertifikat/s-software-eginners.png"
+        },
+        {
+            judul: "Belajar Pengembangan Web Intermediate",
+            penerbit: "Dicoding",
+            tanggal: "21 Mei 2025",
+            image: "/images/sertifikat/Belajar Pengembangan Web Intermediate.png"
+        },
+        {
+            judul: "Belajar Back-End Pemula dengan JavaScript",
+            penerbit: "Dicoding",
+            tanggal: "28 Mei 2025",
+            image: "/images/sertifikat/Belajar Back-End Pemula dengan JavaScript.png"
+        }
+    ];
+
+    function hanldeShowFitur(index) {
+        const newList = listPorjects.map((list, indexList) => {
+            if (indexList === index) {
+                list.fitur_active = !list.fitur_active;
+            };
+            return {
+                ...list
+            }
+        });
+        setListProjects(newList);
+        console.log(listPorjects);
+    }
+    function sendEmail(e) {
+        e.preventDefault();
+        const form = {
+            name: name,
+            email: email,
+            message: message,
+            time: new Date().toISOString(),
+            title: "Permberitahuan"
+        }
+        emailjs.send("service_oq40lzv", "template_36flg2v", form, "i4QJcSSaLrbfNXOHb")
+            .then(response => {
+                alert("Terimakasih telah menghubungi saya😊");
+                setName("");
+                setEmail("");
+                setMessage("");
+            })
+            .catch(() => alert("Wadduh gagal nih"));
+    }
+
+    function handleClick(e) {
+        if (navbarRef.current && !navbarRef.current.contains(e.target)) {
+            setActiveNavbar(false);
+        }
+    }
+
+    function handleOpenWindow(link) {
+        window.open(link, "_blank");
+    }
 
     useEffect(() => {
-        const form = document.querySelector("form");
-        const nameUser = document.getElementById("name");
-        const email = document.getElementById("email");
-        const pesan = document.getElementById("pesan");
-
+        window.addEventListener('click', handleClick);
+        return () => {
+            window.removeEventListener('click', handleClick);
+        }
+    }, [])
+    useEffect(() => {
         const navs = document.getElementsByClassName("nav");
-
-        form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            console.log(nameUser.value + email.value + pesan.value);
+        const getNav = location.hash;
+        Array.from(navs).forEach(nav => {
+            nav.classList.remove("active");
+            if (nav.getAttribute("href") == getNav) {
+                nav.click();
+                nav.classList.add("active");
+            }
         })
-
-        for (const nav of navs) {
+        Array.from(navs).forEach(nav => {
             nav.addEventListener("click", () => {
-                for (const navchild of navs) {
-                    navchild.classList.remove("active");
-                }
+                Array.from(navs).forEach(nav => {
+                    nav.classList.remove("active");
+                })
                 nav.classList.add("active");
             });
-        }
+        });
     }, []);
     return (
         <>
             <header>
                 <nav>
-                    <ul className="navbar-ul" style={activeNavbar ? { maxHeight: "250px" } : { maxHeight: "35px" }}>
+                    <ul className="navbar-ul" ref={navbarRef} style={activeNavbar ? { maxHeight: "250px" } : { maxHeight: "35px" }}>
                         <li className="my_name">
                             <h2>Andy Dev</h2>
                         </li>
@@ -47,14 +168,12 @@ export default function Portofolio() {
                 </nav>
             </header>
             <main>
-                <section id="home" className="home">
+                <section id="home" className="home" style={{ paddingTop: "10rem" }}>
                     <div className="text-home">
                         <p className="text-intro">Halo! Saya Andy Widianto 👋</p>
-                        <h2>Web Developer</h2>
+                        <h2>Fullstack Developer</h2>
                         <p className="description">
-                            Web Developer dengan minat di pengembangan aplikasi, web interaktif, dan open source. Selalu
-                            antusias
-                            untuk belajar teknologi baru dan berkontribusi dalam proyek-proyek inovatif.
+                            Seorang Fullstack Developer dengan pengalaman dalam pengembangan aplikasi berbasis web dan mobile. Familiar dengan integrasi frontend-backend, API, serta pengembangan fitur interaktif.
                         </p>
                         <div className="home-button">
                             <a href="#project" className="project">Lihat Proyek Saya →</a>
@@ -68,12 +187,12 @@ export default function Portofolio() {
                     <h2 className="judul">Tentang Saya</h2>
                     <div className="about-section">
                         <div className="picture">
-                            <img src="/images/gambar_saya.jpg" />
+                            <img src="/images/gambar_saya2.jpg" />
                         </div>
                         <div className="description">
                             <div className="text-about-me">
                                 <p>
-                                    Halo! Saya Andy Widianto, seorang mahasiswa STMIK Tegal yang berfokus pada pengembangan
+                                    Halo! Saya Andy Widianto, seorang mahasiswa Universitas Harkat Negeri yang berfokus pada pengembangan
                                     aplikasi dan website fullstack.
 
                                     Saat ini saya sedang mengembangkan beberapa proyek pribadi, di antaranya website E-Commerce
@@ -81,7 +200,7 @@ export default function Portofolio() {
                                     penyakit berbasis data gejala.
 
                                     Saya terbiasa bekerja dengan berbagai teknologi modern seperti React, Vue, Tailwind CSS,
-                                    Bootstrap, Express, dan Hapi, untuk membangun aplikasi yang responsive, interaktif, dan
+                                    Bootstrap, Futter, Express, dan Hapi, untuk membangun aplikasi yang responsive, interaktif, dan
                                     bernilai guna.
 
                                     Saya percaya bahwa belajar melalui proyek nyata adalah cara terbaik untuk terus berkembang.
@@ -117,6 +236,9 @@ export default function Portofolio() {
                             </svg>
                         </div>
                         <div className="card-skill">
+                            <svg role="img" viewBox="0 0 24 24" fill="#02569B" xmlns="http://www.w3.org/2000/svg"><title>Flutter</title><path d="M14.314 0L2.3 12 6 15.7 21.684.013h-7.357zm.014 11.072L7.857 17.53l6.47 6.47H21.7l-6.46-6.468 6.46-6.46h-7.37z" /></svg>
+                        </div>
+                        <div className="card-skill">
                             <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <title>Vue.js</title>
                                 <path fill="#4FC08D"
@@ -148,114 +270,66 @@ export default function Portofolio() {
                 </section>
                 <section id="project" className="project">
                     <h2 className="judul">Proyek Terbaru</h2>
-                    <div className="card">
-                        <div className="card-project">
-                            <h2>BelanjaQu</h2>
-                            <img src="images/demo/belanjaqu1.jpeg" alt="" />
-                            <div className="text-project">
-                                <h2>BelanjaQu</h2>
-                                <p>Applikasi web e-commerce untuk mempermudah pengguna untuk mencari, membeli dan membayar
-                                    produk secara online
-                                </p>
-                                <Link to="/belanjaqu">Study Kasus<span>→</span></Link>
+                    <Swiper
+                        modules={[Navigation, Pagination, Scrollbar, A11y]}
+                        spaceBetween={50}
+                        slidesPerView={2}
+                        breakpoints={{
+                            640: { slidesPerView: 1, spaceBetween: 20 },
+                            768: { slidesPerView: 2, spaceBetween: 30 },
+                            1024: { slidesPerView: 2, spaceBetween: 40 },
+                        }}
+                        navigation
+                        pagination={{ clickable: true }}
+                        centeredSlides={true}
+                        initialSlide={1}>
+                        {listPorjects.map((project, index) => (
+                            <SwiperSlide key={index}>
+                                <div className="card-project">
+                                    <img src={project.image} alt="" />
+                                    <div className="text-project">
+                                        <h2>{project.name}</h2>
+                                        <div className="" style={{ overflowY: "scroll", maxHeight: "160px" }}>
+                                            <p>{project.description}
+                                            </p>
+                                            {project.fitur_active ? project.list_fitur.map((fitur, index) => (
+                                                <div key={index}>
+                                                    <span style={{ fontWeight: "bold" }}>{fitur.name}</span> - {fitur.description}
+                                                </div>
+                                            )) : <></>}
+                                            <p>{project.fitur_active ? "Teknologi: " + project.teknologi : ""}</p>
+                                        </div>
+                                        <button onClick={() => hanldeShowFitur(index)} style={{ color: "white", padding: "0px", margin: "0px", border: "none", fontSize: "13px", cursor: "pointer", background: "transparent" }}>{!project.fitur_active ? "lihat fitur" : "sembunyikan fitur"}</button>
+                                        <Link style={{ position: "absolute", bottom: "10px", left: "10px" }} to={project.link_repo}>git repository<span>→</span></Link>
+                                    </div>
+                                </div>
+                            </SwiperSlide>
+                        ))}
+                        <SwiperSlide>
+                            <div style={{ display: "flex", alignItems: "center", height: "300px" }}>
+                                <button className="detail" onClick={() => handleOpenWindow("https://github.com/AndyWidianto?tab=repositories")}>Lihat Lebih Banyak</button>
                             </div>
-                            {/* <!-- <p>Website E-Commerce ini saya kembangkan sebagai proyek pribadi untuk mengasah keterampilan
-                                    pengembangan web fullstack. Proyek ini dilengkapi fitur utama seperti chat real-time antara
-                                    penjual dan pembeli, notifikasi pesanan, manajemen produk, pencarian produk, galeri produk,
-                                    checkout, dan Reels untuk promosi.
-
-                                    Website ini dirancang dengan antarmuka yang responsif dan modern menggunakan React, Vue,
-                                    Tailwind CSS, Bootstrap, serta backend dengan Express atau Hapi.
-
-                                    Proyek ini masih dalam tahap pengembangan dan terus saya kembangkan untuk menjadi platform
-                                    belanja online yang praktis dan interaktif.</p>
-                                <!-- <div className="tools">
-                                    <button>React.js</button>
-                                    <button>Tailwind</button>
-                                    <button>Node.js</button>
-                                    <button>Express</button>
-                                    <button>Socket.io</button>
-                                </div> */}
-                        </div>
-                        <div className="card-project">
-                            <h2>KesehatanKu</h2>
-                            <img src="/images/demo/kesehatanku1.png" alt="" />
-                            <div className="text-project">
-                                <h2>KesehatanKu</h2>
-                                <p>KesehatanKu adalah proyek capstone website informasi kesehatan dengan deteksi penyakit kulit dan gejala.
-                                    Dibuat sebagai Frontend Developer untuk menghadirkan antarmuka yang responsif dan mudah digunakan.
-                                </p>
-                                <Link to="/kesehatanku">Study Kasus<span>→</span></Link>
-                            </div>
-                        </div>
-                    </div>
+                        </SwiperSlide>
+                    </Swiper>
                 </section>
                 <section id="sertifikat" className="sertifikat">
                     <h2 className="judul">Sertifikat</h2>
                     <div className="card">
-                        <div className="card-sertifikat">
-                            <div className="judul">
-                                <h2>Belajar Fundamental Front-End Web Development</h2>
+                        {listSertifikat.map((sertifikat, index) => (
+                            <div className="card-sertifikat">
+                                <div className="judul">
+                                    <h2>{sertifikat.judul}</h2>
+                                </div>
+                                <div className="info">
+                                    <p>Penerbit: <span>{sertifikat.penerbit}</span></p>
+                                    <p>Tanggal: <span>{sertifikat.tanggal}</span></p>
+                                </div>
+                                <img src={sertifikat.image} alt={sertifikat.judul} />
                             </div>
-                            <div className="info">
-                                <p>Penerbit: <span>Dicoding</span></p>
-                                <p>Tanggal: <span>19 April 2025</span></p>
-                            </div>
-                            <img src="/images/sertifikat/Belajar Fundamental Front-End Web Development.png" alt="" />
-                        </div>
-                        <div className="card-sertifikat">
-                            <div className="judul">
-                                <h2>Memulai Dasar Pemrograman untuk Menjadi Pengembang Software</h2>
-                            </div>
-                            <div className="info">
-                                <p>Penerbit: <span>Dicoding</span></p>
-                                <p>Tanggal: <span>13 Februari 2025</span></p>
-                            </div>
-                            <img src="/images/sertifikat/s-software-eginners.png" alt="" />
-                        </div>
-                        <div className="card-sertifikat">
-                            <div className="judul">
-                                <h2>Belajar Pengembangan Web Intermediate</h2>
-                            </div>
-                            <div className="info">
-                                <p>Penerbit: <span>Dicoding</span></p>
-                                <p>Tanggal: <span>21 Mei 2025</span></p>
-                            </div>
-                            <img src="/images/sertifikat/Belajar Pengembangan Web Intermediate.png" alt="" />
-                        </div>
-                        <div className="card-sertifikat">
-                            <div className="judul">
-                                <h2>Belajar Back-End Pemula dengan JavaScript</h2>
-                            </div>
-                            <div className="info">
-                                <p>Penerbit: <span>Dicoding</span></p>
-                                <p>Tanggal: <span>28 Mei 2025</span></p>
-                            </div>
-                            <img src="/images/sertifikat/Belajar Back-End Pemula dengan JavaScript.png" alt="" />
-                        </div>
-                        <div className="card-sertifikat">
-                            <div className="judul">
-                                <h2>Pengenalan ke Logika Pemrograman (Programming Logic 101)</h2>
-                            </div>
-                            <div className="info">
-                                <p>Penerbit: <span>Dicoding</span></p>
-                                <p>Tanggal: <span>14 Februari 2025</span></p>
-                            </div>
-                            <img src="/images/sertifikat/Pengenalan ke Logika Pemrograman (Programming Logic 101).png" alt="" />
-                        </div>
-                        <div className="card-sertifikat">
-                            <div className="judul">
-                                <h2>Belajar Dasar Git dengan GitHub</h2>
-                            </div>
-                            <div className="info">
-                                <p>Penerbit: <span>Dicoding</span></p>
-                                <p>Tanggal: <span>16 Februari 2025</span></p>
-                            </div>
-                            <img src="/images/sertifikat/Belajar Dasar Git dengan GitHub.png" alt="" />
-                        </div>
+                        ))}
                     </div>
                     <div className="info-detail">
-                        <a href="https://drive.google.com/drive/u/0/folders/1h_tfT95SNhDdRtZ1_CryCj9kJkU89UT5">Muat Lebih Banyak →</a>
+                        <button className="detail" onClick={() => handleOpenWindow("https://drive.google.com/drive/u/0/folders/1h_tfT95SNhDdRtZ1_CryCj9kJkU89UT5")}>Muat Lebih Banyak →</button>
                     </div>
                 </section>
                 <section className="contact" id="contact">
@@ -264,18 +338,18 @@ export default function Portofolio() {
                         <p>Tertarik untuk bekerja sama atau ingin mendiskusikan project? Jangan ragu untuk menghubungi saya!</p>
                     </div>
                     <div className="contact-form">
-                        <form>
+                        <form onSubmit={sendEmail} method="POST">
                             <div className="group-input">
                                 <label htmlFor="name">Name</label>
-                                <input type="text" name="name" id="name" />
+                                <input type="text" name="name" value={name} onChange={(e) => setName(e.target.value)} id="name" />
                             </div>
                             <div className="group-input">
                                 <label htmlFor="email">Email</label>
-                                <input type="text" name="email" id="email" />
+                                <input type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)} id="email" />
                             </div>
                             <div>
                                 <label htmlFor="pesan">Pesan</label>
-                                <textarea name="pesan" id="pesan"></textarea>
+                                <textarea name="pesan" value={message} onChange={(e) => setMessage(e.target.value)} id="pesan"></textarea>
                             </div>
                             <button type="submit">Kirim Pesan</button>
                         </form>
@@ -283,14 +357,14 @@ export default function Portofolio() {
                 </section>
             </main>
             <footer>
-                <div class="container">
-                    <div class="social-links">
-                        <a href="https://github.com/AndyWidianto" class="social-link"><Github className="icon-sosial" /></a>
-                        <a href="https://www.linkedin.com/in/andy-widianto-8a9067340/" class="social-link"><Linkedin className="icon-sosial" /></a>
-                        <a href="https://www.instagram.com/andywidiantoo/" class="social-link"><Instagram className="icon-sosial" /></a>
-                        <a href="https://web.facebook.com/AndyWidiantoo/" class="social-link"><Facebook className="icon-sosial" /></a>
+                <div className="container">
+                    <div className="social-links">
+                        <a href="https://github.com/AndyWidianto" className="social-link"><Github className="icon-sosial" /></a>
+                        <a href="https://www.linkedin.com/in/andy-widianto-8a9067340/" className="social-link"><Linkedin className="icon-sosial" /></a>
+                        <a href="https://www.instagram.com/andywidiantoo/" className="social-link"><Instagram className="icon-sosial" /></a>
+                        <a href="https://web.facebook.com/AndyWidiantoo/" className="social-link"><Facebook className="icon-sosial" /></a>
                     </div>
-                    <p>&copy; 2025 Portfolio. Made with ❤️ for GitHub</p>
+                    <p>Portfolio Andy Widianto &copy; 2025</p>
                 </div>
             </footer>
         </>

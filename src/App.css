@@ -1,3 +1,8 @@
+@import "swiper/css";
+@import 'swiper/css/navigation';
+@import 'swiper/css/pagination';
+@import 'swiper/css/scrollbar';
+
 :root {
   --primary-blue: #2563eb;
   --light-blue: #3b82f6;
@@ -89,12 +94,11 @@ main {
   z-index: 5;
 }
 
-section {
+section:is(:not(section.project)) {
   padding: 5rem;
 }
 
 main .home {
-  display: flex;
   height: 100vh;
   padding-top: 8rem;
 }
@@ -204,8 +208,7 @@ main .about-section .description .text-about-me {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 10px;
 }
-
-.project .card .card-project {
+.card-project {
   border: 1px solid var(--gray-400);
   background-color: var(--white);
   height: 300px;
@@ -216,7 +219,10 @@ main .about-section .description .text-about-me {
   transition: transform 400ms ease;
 }
 
-.project .card .card-project .text-project {
+*::-webkit-scrollbar {
+  display: none;
+}
+.card-project .text-project {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -227,18 +233,18 @@ main .about-section .description .text-about-me {
   color: var(--gray-200);
 }
 
-.project .card .card-project .text-project h2 {
+.card-project .text-project h2 {
   padding: 0;
   margin: 0;
 }
 
-.project .card .card-project .text-project p {
+.card-project .text-project p {
   padding: 0;
   margin: 0;
   font-size: 0.9rem;
 }
 
-.project .card .card-project .text-project a {
+.card-project .text-project a {
   display: flex;
   align-items: center;
   text-decoration: none;
@@ -247,17 +253,17 @@ main .about-section .description .text-about-me {
   color: var(--blue-500);
 }
 
-.project .card .card-project .text-project a span {
+.card-project .text-project a span {
   display: block;
   padding-inline: 2px;
   transition: transform 200ms ease;
 }
 
-.project .card .card-project .text-project a:hover span {
+.card-project .text-project a:hover span {
   transform: translateX(5px);
 }
 
-.project .card .card-project img {
+.card-project img {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -268,11 +274,11 @@ main .about-section .description .text-about-me {
   filter: brightness(30%);
 }
 
-.project .card .card-project h2 {
+.card-project h2 {
   font-size: 1.6rem;
 }
 
-.project .card .card-project .tools {
+.card-project .tools {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -280,7 +286,7 @@ main .about-section .description .text-about-me {
   gap: 10px;
 }
 
-.project .card .card-project .tools button {
+.card-project .tools button {
   display: flex;
   justify-content: center;
   padding: 6px;
@@ -376,15 +382,14 @@ main .about-section .description .text-about-me {
   color: var(--gray-800);
 }
 
-.sertifikat .info-detail {
+.info-detail {
   display: flex;
   justify-content: center;
   align-items: center;
   padding-top: 2rem;
 }
 
-.sertifikat .info-detail a {
-  text-decoration: none;
+button.detail {
   display: flex;
   justify-content: center;
   max-width: 250px;
@@ -392,12 +397,13 @@ main .about-section .description .text-about-me {
   padding-inline: 20px;
   border-radius: 8px;
   font-size: 1rem;
+  border: none;
   font-weight: bold;
   color: var(--blue-700);
   transition: all 400ms ease-in-out;
 }
 
-.sertifikat .info-detail a:hover {
+button.detail:hover {
   transform: translateY(-2px);
   box-shadow: 0px 3px 5px var(--gray-400);
 }
@@ -713,3 +719,8 @@ ul li.icon .icon-menu {
     right: 0;
   }
 }
+
+.w-100 {
+  width: 100%;
+}
+
