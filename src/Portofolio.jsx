@@ -11,6 +11,7 @@ export default function Portofolio() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const navbarRef = useRef();
 
@@ -26,7 +27,7 @@ export default function Portofolio() {
                 { name: "Komentar & Feedback", description: "Memberikan masukan atau dukungan antar pengguna." }
             ],
             teknologi: "Vue.js, Node.js + Express, sequelize(mysql), Socket.io, , JWT & OAuth.",
-            image: "images/demo/belanjaqu1.jpeg",
+            image: "images/demo/kreasiku.png",
             link_repo: "https://github.com/AndyWidianto/kreasiku"
         },
         {
@@ -96,6 +97,10 @@ export default function Portofolio() {
     }
     function sendEmail(e) {
         e.preventDefault();
+        if (name === "" || email === "") {
+            return alert("Mohon untuk mengisi name dan email");
+        }
+        setLoading(true);
         const form = {
             name: name,
             email: email,
@@ -110,7 +115,9 @@ export default function Portofolio() {
                 setEmail("");
                 setMessage("");
             })
-            .catch(() => alert("Wadduh gagal nih"));
+            .catch(() => alert("Wadduh gagal nih"))
+            .finally(() => setLoading(false));
+
     }
 
     function handleClick(e) {
@@ -351,7 +358,10 @@ export default function Portofolio() {
                                 <label htmlFor="pesan">Pesan</label>
                                 <textarea name="pesan" value={message} onChange={(e) => setMessage(e.target.value)} id="pesan"></textarea>
                             </div>
-                            <button type="submit">Kirim Pesan</button>
+                            <button type="submit" disabled={loading} style={{display: "flex", alignItems: "center", justifyContent: "center", gap: "4px"}}>
+                                {loading ? <div className="loading-circular"></div> : <></>}
+                                {loading ? "Mengirimkan pesan" : "Kirim Pesan"}
+                            </button>
                         </form>
                     </div>
                 </section>
